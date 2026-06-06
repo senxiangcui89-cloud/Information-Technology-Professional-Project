@@ -61,13 +61,12 @@ def main() -> None:
             fps_ema = alpha * (1 / max(elapsed, 1e-6)) + (1 - alpha) * fps_ema
 
             # HUD
-            cv2.putText(annotated, f"FPS: {fps_ema:.1f}", (10, 30),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255), 2)
-            cv2.putText(annotated, f"Objects: {len(detections)}", (10, 60),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255), 2)
+            cv2.putText(annotated, f"FPS: {fps_ema:.1f}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255), 2)
+            cv2.putText(
+                annotated, f"Objects: {len(detections)}", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255), 2
+            )
             if args.clahe:
-                cv2.putText(annotated, "CLAHE ON", (10, 90),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
+                cv2.putText(annotated, "CLAHE ON", (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
 
             if writer:
                 writer.write(annotated)
