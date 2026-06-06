@@ -1,15 +1,15 @@
 import json
-import yaml
 import sys
 from pathlib import Path
+
+import yaml
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from app.services.detector import AVAILABLE_MODELS
 from ultralytics import YOLO
-from app.services.detector import AVAILABLE_MODELS, get_model
-from app.core.config import UPLOAD_DIR
 
 
 def run_evaluation(model_name: str, dataset_path: str, task_id: int) -> dict:
