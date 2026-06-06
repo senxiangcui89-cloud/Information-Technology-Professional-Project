@@ -1,0 +1,84 @@
+# ============================================================
+# Water Surface Floating Debris Detection — Default Config
+# ============================================================
+project:
+  name: "floating-debris-detection"
+  seed: 42
+
+# --------------------------------------------------
+# Paths (relative to project root: ultralytics-8.3.163/)
+# --------------------------------------------------
+paths:
+  raw_data:        "dataset/FloW_IMG"
+  processed_data:  "data/processed"
+  weights_pretrained: "weights/pretrained"
+  weights_trained: "weights/trained"
+  experiments:     "experiments"
+  dataset_yaml:    "data/dataset.yaml"
+
+# --------------------------------------------------
+# Dataset
+# --------------------------------------------------
+dataset:
+  name: "FloW-Dataset"
+  url: "https://github.com/..."             # fill after locating actual mirror
+  train_split: 0.80
+  val_split:   0.20
+
+# --------------------------------------------------
+# CLAHE preprocessing
+# --------------------------------------------------
+clahe:
+  enabled: true
+  clip_limit: 2.0
+  tile_grid_size: [8, 8]
+  color_space: "LAB"                       # LAB | YUV | BGR
+
+# --------------------------------------------------
+# Model candidates to evaluate
+# --------------------------------------------------
+models:
+  - name: "yolov8n"
+    weights: "weights/pretrained/yolov8n.pt"
+    size: "n"
+  - name: "yolov8s"
+    weights: "weights/pretrained/yolov8s.pt"
+    size: "s"
+  - name: "yolo11n"
+    weights: "weights/pretrained/yolo11n.pt"
+    size: "n"
+  - name: "yolo11s"
+    weights: "weights/pretrained/yolo11s.pt"
+    size: "s"
+
+# --------------------------------------------------
+# Training
+# --------------------------------------------------
+training:
+  epochs: 100
+  batch_size: 16
+  imgsz: 640
+  workers: 4
+  optimizer: "AdamW"
+  lr0: 0.001
+  lrf: 0.01
+  momentum: 0.937
+  weight_decay: 0.0005
+  warmup_epochs: 3
+  warmup_momentum: 0.8
+  warmup_bias_lr: 0.1
+  patience: 50                               # early stopping
+  device: "cuda"                             # cuda | cpu | 0,1
+  amp: true
+  cos_lr: true
+  close_mosaic: 10
+
+# --------------------------------------------------
+# Evaluation
+# --------------------------------------------------
+evaluation:
+  metrics: ["mAP50", "mAP50-95", "precision", "recall", "f1-score"]
+  conf_threshold: 0.25
+  iou_threshold: 0.45
+  benchmark_iterations: 100
+  save_plots: true
