@@ -1,13 +1,11 @@
 import base64
-import uuid
 
 import cv2
 import numpy as np
-from fastapi import APIRouter, Depends, HTTPException, Form
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Depends, Form, HTTPException
 
 from app.api.deps import get_current_user
-from app.services.detector import detect, AVAILABLE_MODELS
+from app.services.detector import AVAILABLE_MODELS, detect
 
 router = APIRouter(prefix="/api/camera", tags=["camera"])
 
@@ -39,8 +37,14 @@ def detect_frame(
 
     return {
         "detections": [
-            {"class_name": d["class_name"], "confidence": d["confidence"],
-             "x1": d["x1"], "y1": d["y1"], "x2": d["x2"], "y2": d["y2"]}
+            {
+                "class_name": d["class_name"],
+                "confidence": d["confidence"],
+                "x1": d["x1"],
+                "y1": d["y1"],
+                "x2": d["x2"],
+                "y2": d["y2"],
+            }
             for d in detections
         ],
         "count": len(detections),

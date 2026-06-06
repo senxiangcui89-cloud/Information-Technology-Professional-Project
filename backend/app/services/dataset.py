@@ -1,6 +1,6 @@
 import zipfile
-import shutil
 from pathlib import Path
+
 from app.core.config import UPLOAD_DIR
 
 DATASET_DIR = UPLOAD_DIR / "datasets"

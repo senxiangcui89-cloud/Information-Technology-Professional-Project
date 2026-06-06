@@ -9,21 +9,21 @@ project:
 # Paths (relative to project root: ultralytics-8.3.163/)
 # --------------------------------------------------
 paths:
-  raw_data:        "dataset/FloW_IMG"
-  processed_data:  "data/processed"
+  raw_data: "dataset/FloW_IMG"
+  processed_data: "data/processed"
   weights_pretrained: "weights/pretrained"
   weights_trained: "weights/trained"
-  experiments:     "experiments"
-  dataset_yaml:    "data/dataset.yaml"
+  experiments: "experiments"
+  dataset_yaml: "data/dataset.yaml"
 
 # --------------------------------------------------
 # Dataset
 # --------------------------------------------------
 dataset:
   name: "FloW-Dataset"
-  url: "https://github.com/..."             # fill after locating actual mirror
+  url: "https://github.com/..." # fill after locating actual mirror
   train_split: 0.80
-  val_split:   0.20
+  val_split: 0.20
 
 # --------------------------------------------------
 # CLAHE preprocessing
@@ -32,7 +32,7 @@ clahe:
   enabled: true
   clip_limit: 2.0
   tile_grid_size: [8, 8]
-  color_space: "LAB"                       # LAB | YUV | BGR
+  color_space: "LAB" # LAB | YUV | BGR
 
 # --------------------------------------------------
 # Model candidates to evaluate
@@ -67,8 +67,8 @@ training:
   warmup_epochs: 3
   warmup_momentum: 0.8
   warmup_bias_lr: 0.1
-  patience: 50                               # early stopping
-  device: "cuda"                             # cuda | cpu | 0,1
+  patience: 50 # early stopping
+  device: "cuda" # cuda | cpu | 0,1
   amp: true
   cos_lr: true
   close_mosaic: 10

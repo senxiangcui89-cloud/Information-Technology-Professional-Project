@@ -1,17 +1,15 @@
 import threading
-import json
-from pathlib import Path
 
-from fastapi import APIRouter, Depends, HTTPException, Form
+from fastapi import APIRouter, Depends, Form, HTTPException
 from sqlalchemy.orm import Session
 
-from app.core.database import get_db
-from app.core.config import UPLOAD_DIR
 from app.api.deps import get_current_user
+from app.core.config import UPLOAD_DIR
+from app.core.database import get_db
 from app.models.eval import EvalTask
-from app.services.evaluator import run_evaluation
 from app.services.dataset import list_datasets
 from app.services.detector import AVAILABLE_MODELS
+from app.services.evaluator import run_evaluation
 
 router = APIRouter(prefix="/api/eval", tags=["eval"])
 
@@ -49,6 +47,7 @@ def eval_run(
 
     def _run():
         from app.core.database import SessionLocal
+
         db2 = SessionLocal()
         try:
             dataset_path = UPLOAD_DIR / "datasets" / dataset_name
@@ -98,12 +97,7 @@ def eval_result(task_id: int, user: dict = Depends(get_current_user), db: Sessio
 
 @router.get("/tasks")
 def list_eval_tasks(user: dict = Depends(get_current_user), db: Session = Depends(get_db)):
-    tasks = (
-        db.query(EvalTask)
-        .order_by(EvalTask.created_at.desc())
-        .limit(50)
-        .all()
-    )
+    tasks = db.query(EvalTask).order_by(EvalTask.created_at.desc()).limit(50).all()
     return [
         {
             "task_id": t.id,
@@ -121,8 +115,7 @@ def list_eval_tasks(user: dict = Depends(get_current_user), db: Session = Depend
 def eval_options():
     return {
         "models": [
-            {"name": k, "display_name": v["display_name"], "mAP50": v["mAP50"]}
-            for k, v in AVAILABLE_MODELS.items()
+            {"name": k, "display_name": v["display_name"], "mAP50": v["mAP50"]} for k, v in AVAILABLE_MODELS.items()
         ],
         "datasets": list_datasets(),
     }
