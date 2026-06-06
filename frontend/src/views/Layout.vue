@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { useRouter, RouterView } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
+import { useRouter, RouterView } from "vue-router";
+import { useAuthStore } from "../stores/auth";
 
-const router = useRouter()
-const auth = useAuthStore()
+const router = useRouter();
+const auth = useAuthStore();
 
 function handleLogout() {
-  auth.logout()
-  router.push('/login')
+  auth.logout();
+  router.push("/login");
 }
 </script>
 
@@ -17,8 +17,13 @@ function handleLogout() {
       <div style="padding: 20px; text-align: center; color: #fff; font-size: 16px; font-weight: bold">
         Debris Detection
       </div>
-      <el-menu :default-active="router.currentRoute.value.path" background-color="#001529" text-color="#ffffff90"
-        active-text-color="#fff" router>
+      <el-menu
+        :default-active="router.currentRoute.value.path"
+        background-color="#001529"
+        text-color="#ffffff90"
+        active-text-color="#fff"
+        router
+      >
         <el-menu-item index="/detect">
           <el-icon><PictureFilled /></el-icon>
           <span>Image Detection</span>

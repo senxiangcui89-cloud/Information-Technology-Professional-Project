@@ -1,23 +1,23 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
+import { reactive, ref } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../stores/auth";
 
-const router = useRouter()
-const auth = useAuthStore()
-const form = reactive({ username: '', email: '', password: '', password2: '' })
-const loading = ref(false)
+const router = useRouter();
+const auth = useAuthStore();
+const form = reactive({ username: "", email: "", password: "", password2: "" });
+const loading = ref(false);
 
 async function handleRegister() {
   if (form.password !== form.password2) {
-    return
+    return;
   }
-  loading.value = true
+  loading.value = true;
   try {
-    await auth.register(form)
-    router.push('/detect')
+    await auth.register(form);
+    router.push("/detect");
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 </script>
@@ -36,16 +36,30 @@ async function handleRegister() {
           <el-input v-model="form.email" placeholder="Email" size="large" prefix-icon="Message" />
         </el-form-item>
         <el-form-item>
-          <el-input v-model="form.password" type="password" placeholder="Password" size="large" prefix-icon="Lock"
-            show-password />
+          <el-input
+            v-model="form.password"
+            type="password"
+            placeholder="Password"
+            size="large"
+            prefix-icon="Lock"
+            show-password
+          />
         </el-form-item>
         <el-form-item>
-          <el-input v-model="form.password2" type="password" placeholder="Confirm password" size="large" prefix-icon="Lock"
-            show-password @keyup.enter="handleRegister" />
+          <el-input
+            v-model="form.password2"
+            type="password"
+            placeholder="Confirm password"
+            size="large"
+            prefix-icon="Lock"
+            show-password
+            @keyup.enter="handleRegister"
+          />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" size="large" :loading="loading" style="width: 100%"
-            @click="handleRegister">Register</el-button>
+          <el-button type="primary" size="large" :loading="loading" style="width: 100%" @click="handleRegister"
+            >Register</el-button
+          >
         </el-form-item>
         <el-form-item style="text-align: center; margin-bottom: 0">
           <el-link type="primary" @click="router.push('/login')">Already have an account? Sign in</el-link>
