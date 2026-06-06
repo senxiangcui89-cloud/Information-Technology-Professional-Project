@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
+import { reactive, ref } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "../stores/auth";
 
-const router = useRouter()
-const auth = useAuthStore()
-const form = reactive({ username: '', password: '' })
-const loading = ref(false)
+const router = useRouter();
+const auth = useAuthStore();
+const form = reactive({ username: "", password: "" });
+const loading = ref(false);
 
 async function handleLogin() {
-  loading.value = true
+  loading.value = true;
   try {
-    await auth.login(form)
-    router.push('/detect')
+    await auth.login(form);
+    router.push("/detect");
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 </script>
@@ -30,12 +30,20 @@ async function handleLogin() {
           <el-input v-model="form.username" placeholder="Username" size="large" prefix-icon="User" />
         </el-form-item>
         <el-form-item>
-          <el-input v-model="form.password" type="password" placeholder="Password" size="large" prefix-icon="Lock"
-            show-password @keyup.enter="handleLogin" />
+          <el-input
+            v-model="form.password"
+            type="password"
+            placeholder="Password"
+            size="large"
+            prefix-icon="Lock"
+            show-password
+            @keyup.enter="handleLogin"
+          />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" size="large" :loading="loading" style="width: 100%"
-            @click="handleLogin">Sign In</el-button>
+          <el-button type="primary" size="large" :loading="loading" style="width: 100%" @click="handleLogin"
+            >Sign In</el-button
+          >
         </el-form-item>
         <el-form-item style="text-align: center; margin-bottom: 0">
           <el-link type="primary" @click="router.push('/register')">No account? Register now</el-link>

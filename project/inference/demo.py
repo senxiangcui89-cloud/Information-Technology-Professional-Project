@@ -1,9 +1,7 @@
 """End-to-end demo: gradio web UI for interactive debris detection."""
 
 import argparse
-from pathlib import Path
 
-import cv2
 import numpy as np
 
 from project.models.detector import Detector, DetectorConfig
@@ -19,7 +17,7 @@ def build_ui(weights: str, device: str = "cuda") -> None:
     def detect_fn(image: np.ndarray, conf: float, clahe: bool) -> np.ndarray:
         detector.config.conf = conf
         detector.config.clahe_enabled = clahe
-        annotated, detections = detector.detect_and_annotate(image)
+        annotated, _detections = detector.detect_and_annotate(image)
         return annotated
 
     gr.Interface(

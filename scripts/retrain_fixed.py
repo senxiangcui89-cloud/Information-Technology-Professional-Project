@@ -1,4 +1,5 @@
 """Re-train experiments with consistent lr0=0.001."""
+
 import sys
 from pathlib import Path
 
@@ -7,7 +8,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 
 def main():
-    from project.train.train import train_experiment, ExperimentConfig, TrainingConfig
+    from project.train.train import ExperimentConfig, TrainingConfig, train_experiment
 
     training = TrainingConfig(
         epochs=100,
@@ -60,10 +61,10 @@ def main():
     ]
 
     for exp in experiments:
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"Training: {exp.name} — {exp.description}")
         print(f"Model: {exp.model}  Data: {exp.data_yaml}  lr0: {exp.training.lr0}")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
         result = train_experiment(exp, experiments_dir=str(PROJECT_ROOT / "experiments"))
         print(f"Result: mAP50={result['best_mAP50']:.4f}  mAP50-95={result['best_mAP50_95']:.4f}")
 

@@ -1,10 +1,7 @@
 """Unified detector interface for all YOLO variants."""
 
-from pathlib import Path
-
 import cv2
 import numpy as np
-import torch
 from pydantic import BaseModel, Field
 
 from project.data.preprocess import apply_clahe
@@ -78,16 +75,20 @@ class Detector:
             confs = r.boxes.conf.cpu().numpy()
             clss = r.boxes.cls.cpu().numpy().astype(int)
             for box, conf, cls_id in zip(boxes, confs, clss):
-                detections.append(DetectionResult(
-                    class_id=int(cls_id),
-                    class_name=self.config.class_names.get(int(cls_id), f"class_{cls_id}"),
-                    confidence=round(float(conf), 4),
-                    bbox_xyxy=tuple(float(v) for v in box),
-                ))
+                detections.append(
+                    DetectionResult(
+                        class_id=int(cls_id),
+                        class_name=self.config.class_names.get(int(cls_id), f"class_{cls_id}"),
+                        confidence=round(float(conf), 4),
+                        bbox_xyxy=tuple(float(v) for v in box),
+                    )
+                )
         return detections
 
     def detect_and_annotate(
-        self, image: np.ndarray, verbose: bool = False,
+        self,
+        image: np.ndarray,
+        verbose: bool = False,
     ) -> tuple[np.ndarray, list[DetectionResult]]:
         """Run detection and draw bounding boxes on a copy of the image."""
         dets = self.detect(image, verbose=verbose)
@@ -96,6 +97,5 @@ class Detector:
             x1, y1, x2, y2 = map(int, d.bbox_xyxy)
             cv2.rectangle(annotated, (x1, y1), (x2, y2), (0, 255, 0), 2)
             label = f"{d.class_name} {d.confidence:.2f}"
-            cv2.putText(annotated, label, (x1, y1 - 8),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            cv2.putText(annotated, label, (x1, y1 - 8), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
         return annotated, dets

@@ -5,10 +5,11 @@ Each training run is isolated as an "experiment" with its own config snapshot,
 weights, and result logs.
 """
 
+from __future__ import annotations
+
 import json
 import shutil
 import time
-from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -17,13 +18,14 @@ from pydantic import BaseModel, Field
 
 from project.utils.logger import ExperimentLogger
 
-
 # ----------------------------------------------------------------
 # Configuration models (Pydantic — runtime validation)
 # ----------------------------------------------------------------
 
+
 class TrainingConfig(BaseModel):
     """Training hyperparameters with validation."""
+
     epochs: int = Field(default=100, ge=1, le=1000)
     batch_size: int = Field(default=16, ge=1, le=512)
     imgsz: int = Field(default=640, ge=320, le=1920)
@@ -45,10 +47,11 @@ class TrainingConfig(BaseModel):
 
 class ExperimentConfig(BaseModel):
     """Full experiment configuration."""
+
     name: str
     description: str = ""
     model: str
-    weights: str | None = None          # path to pretrained .pt, or None → auto-download
+    weights: str | None = None  # path to pretrained .pt, or None → auto-download
     data_yaml: str = "data/dataset.yaml"
     clahe_enabled: bool = False
     clahe_overrides: dict[str, Any] = Field(default_factory=dict)
@@ -59,6 +62,7 @@ class ExperimentConfig(BaseModel):
 # ----------------------------------------------------------------
 # Core training function
 # ----------------------------------------------------------------
+
 
 def train_experiment(
     config: ExperimentConfig,
@@ -91,7 +95,7 @@ def train_experiment(
     # Resolve model weights
     weights_path = config.weights
     if weights_path is None:
-        weights_path = f"{config.model}.pt"   # ultralytics auto-downloads
+        weights_path = f"{config.model}.pt"  # ultralytics auto-downloads
 
     logger.log(message="Training started", model=config.model, weights=str(weights_path))
 
@@ -164,6 +168,7 @@ def train_experiment(
 # ----------------------------------------------------------------
 # Batch training — compare models
 # ----------------------------------------------------------------
+
 
 def run_all_experiments(
     config_path: str = "project/config/default.yaml",
