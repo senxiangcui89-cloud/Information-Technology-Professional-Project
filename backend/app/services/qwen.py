@@ -1,7 +1,8 @@
-import base64
-import httpx
-from pathlib import Path
+from __future__ import annotations
 
+import base64
+
+import httpx
 
 QWEN_API_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
 QWEN_API_KEY = "sk-396451b2f76f4ddfa1bbfb597445b8f5"  # Set via environment or config
@@ -18,11 +19,15 @@ def analyze_detection(image_path: str, detections: list[dict], api_key: str | No
     with open(image_path, "rb") as f:
         img_b64 = base64.b64encode(f.read()).decode()
 
-    det_summary = "\n".join(
-        f"- {d['class_name']}: confidence={d['confidence']:.2%}, "
-        f"bbox=({d['x1']:.0f},{d['y1']:.0f},{d['x2']:.0f},{d['y2']:.0f})"
-        for d in detections
-    ) if detections else "未检测到任何目标"
+    det_summary = (
+        "\n".join(
+            f"- {d['class_name']}: confidence={d['confidence']:.2%}, "
+            f"bbox=({d['x1']:.0f},{d['y1']:.0f},{d['x2']:.0f},{d['y2']:.0f})"
+            for d in detections
+        )
+        if detections
+        else "未检测到任何目标"
+    )
 
     prompt = f"""你是一个水环境监测专家。以下是对水面漂浮物图像进行YOLO检测的结果：
 

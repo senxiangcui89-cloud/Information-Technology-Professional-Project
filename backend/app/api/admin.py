@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.core.database import get_db
+
 from app.api.deps import get_current_user
+from app.core.database import get_db
 from app.models.user import User
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
@@ -18,8 +19,13 @@ def require_admin(payload: dict = Depends(get_current_user), db: Session = Depen
 def list_users(admin: User = Depends(require_admin), db: Session = Depends(get_db)):
     users = db.query(User).order_by(User.created_at.desc()).all()
     return [
-        {"id": u.id, "username": u.username, "email": u.email,
-         "is_admin": u.is_admin, "created_at": u.created_at.isoformat() if u.created_at else None}
+        {
+            "id": u.id,
+            "username": u.username,
+            "email": u.email,
+            "is_admin": u.is_admin,
+            "created_at": u.created_at.isoformat() if u.created_at else None,
+        }
         for u in users
     ]
 

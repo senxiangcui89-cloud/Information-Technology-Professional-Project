@@ -1,6 +1,8 @@
 """Evaluate all trained models and generate comparison metrics."""
+
 import json
 from pathlib import Path
+
 from ultralytics import YOLO
 
 MODELS = {
@@ -41,10 +43,18 @@ def main():
     print(hdr)
     print("-" * len(hdr))
     for name, m in results.items():
-        print("%-16s %8.4f %10.4f %8.4f %8.4f %8s %10.1f" % (
-            name, m["mAP50"], m["mAP50-95"], m["precision"], m["recall"],
-            str(m["fps"]) if m["fps"] else "N/A", m["inference_ms"],
-        ))
+        print(
+            "%-16s %8.4f %10.4f %8.4f %8.4f %8s %10.1f"
+            % (
+                name,
+                m["mAP50"],
+                m["mAP50-95"],
+                m["precision"],
+                m["recall"],
+                str(m["fps"]) if m["fps"] else "N/A",
+                m["inference_ms"],
+            )
+        )
 
 
 if __name__ == "__main__":
