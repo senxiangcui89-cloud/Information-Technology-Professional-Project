@@ -1,17 +1,15 @@
 import uvicorn
-from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
-from fastapi.middleware.cors import CORSMiddleware
-
-from app.core.database import engine, Base
-from app.api.auth import router as auth_router
-from app.api.detect import router as detect_router
-from app.api.dataset import router as dataset_router
-from app.api.eval import router as eval_router
-from app.api.camera import router as camera_router
 from app.api.admin import router as admin_router
+from app.api.auth import router as auth_router
+from app.api.camera import router as camera_router
+from app.api.dataset import router as dataset_router
+from app.api.detect import router as detect_router
+from app.api.eval import router as eval_router
 from app.core.config import UPLOAD_DIR
-from app.models.eval import EvalTask  # ensure table created
+from app.core.database import Base, engine
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 Base.metadata.create_all(bind=engine)
 

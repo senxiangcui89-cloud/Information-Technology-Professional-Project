@@ -1,10 +1,13 @@
 """Experiment logging and result tracking."""
 
+from __future__ import annotations
+
 import json
 import time
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
 
 class ExperimentLogger:
     def __init__(self, exp_dir: str | Path, exp_name: str = ""):
