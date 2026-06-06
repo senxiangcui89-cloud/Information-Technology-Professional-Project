@@ -1,102 +1,125 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
-import * as echarts from 'echarts'
-import http from '../api'
+import { ref, onMounted } from "vue";
+import { ElMessage } from "element-plus";
+import * as echarts from "echarts";
+import http from "../api";
 
-interface ModelOpt { name: string; display_name: string; mAP50: number }
-interface DatasetOpt { name: string; train_images: number; val_images: number }
+interface ModelOpt {
+  name: string;
+  display_name: string;
+  mAP50: number;
+}
+interface DatasetOpt {
+  name: string;
+  train_images: number;
+  val_images: number;
+}
 interface EvalTask {
-  task_id: number; status: string; model_name: string; dataset_name: string
-  image_count: number; metrics: any; created_at: string | null
+  task_id: number;
+  status: string;
+  model_name: string;
+  dataset_name: string;
+  image_count: number;
+  metrics: any;
+  created_at: string | null;
 }
 
-const models = ref<ModelOpt[]>([])
-const datasets = ref<DatasetOpt[]>([])
-const selectedModel = ref('yolo11n_raw')
-const selectedDataset = ref('')
-const evaling = ref(false)
-const currentTask = ref<EvalTask | null>(null)
-const tasks = ref<EvalTask[]>([])
-const loading = ref(false)
-const chartRef = ref<HTMLDivElement>()
+const models = ref<ModelOpt[]>([]);
+const datasets = ref<DatasetOpt[]>([]);
+const selectedModel = ref("yolo11n_raw");
+const selectedDataset = ref("");
+const evaling = ref(false);
+const currentTask = ref<EvalTask | null>(null);
+const tasks = ref<EvalTask[]>([]);
+const loading = ref(false);
+const chartRef = ref<HTMLDivElement>();
 
 async function loadOptions() {
-  const res = await http.get('/eval/options')
-  models.value = res.data.models
-  datasets.value = res.data.datasets
-  if (datasets.value.length > 0) selectedDataset.value = datasets.value[0].name
+  const res = await http.get("/eval/options");
+  models.value = res.data.models;
+  datasets.value = res.data.datasets;
+  if (datasets.value.length > 0) selectedDataset.value = datasets.value[0].name;
 }
 async function loadTasks() {
-  loading.value = true
+  loading.value = true;
   try {
-    const res = await http.get('/eval/tasks')
-    tasks.value = res.data
-  } finally { loading.value = false }
+    const res = await http.get("/eval/tasks");
+    tasks.value = res.data;
+  } finally {
+    loading.value = false;
+  }
 }
 
-onMounted(() => { loadOptions(); loadTasks() })
+onMounted(() => {
+  loadOptions();
+  loadTasks();
+});
 
 async function handleEval() {
   if (!selectedDataset.value) {
-    ElMessage.warning('Please upload a dataset first')
-    return
+    ElMessage.warning("Please upload a dataset first");
+    return;
   }
-  evaling.value = true
+  evaling.value = true;
   try {
-    const form = new FormData()
-    form.append('model_name', selectedModel.value)
-    form.append('dataset_name', selectedDataset.value)
-    const res = await http.post('/eval/run', form)
-    ElMessage.success('Evaluation task started')
+    const form = new FormData();
+    form.append("model_name", selectedModel.value);
+    form.append("dataset_name", selectedDataset.value);
+    const res = await http.post("/eval/run", form);
+    ElMessage.success("Evaluation task started");
 
     // Poll until done
     const poll = setInterval(async () => {
-      const r = await http.get(`/eval/result/${res.data.task_id}`)
-      if (r.data.status === 'done' || r.data.status === 'failed') {
-        clearInterval(poll)
-        currentTask.value = r.data
-        evaling.value = false
-        loadTasks()
-        if (r.data.status === 'done') {
-          ElMessage.success('Evaluation complete')
+      const r = await http.get(`/eval/result/${res.data.task_id}`);
+      if (r.data.status === "done" || r.data.status === "failed") {
+        clearInterval(poll);
+        currentTask.value = r.data;
+        evaling.value = false;
+        loadTasks();
+        if (r.data.status === "done") {
+          ElMessage.success("Evaluation complete");
           // Render chart after DOM update
-          setTimeout(renderChart, 200)
+          setTimeout(renderChart, 200);
         } else {
-          ElMessage.error('Evaluation failed: ' + (r.data.error_message || 'Unknown'))
+          ElMessage.error("Evaluation failed: " + (r.data.error_message || "Unknown"));
         }
       }
-    }, 2000)
-  } catch { evaling.value = false }
+    }, 2000);
+  } catch {
+    evaling.value = false;
+  }
 }
 
 function renderChart() {
-  if (!chartRef.value || !currentTask.value?.metrics) return
-  const chart = echarts.init(chartRef.value)
-  const m = currentTask.value.metrics
+  if (!chartRef.value || !currentTask.value?.metrics) return;
+  const chart = echarts.init(chartRef.value);
+  const m = currentTask.value.metrics;
   chart.setOption({
     title: { text: `${currentTask.value.model_name} @ ${currentTask.value.dataset_name}` },
-    tooltip: { trigger: 'axis' },
-    xAxis: { data: ['mAP50', 'mAP50-95', 'Precision', 'Recall'] },
-    yAxis: { max: 1, axisLabel: { formatter: (v: number) => (v * 100).toFixed(0) + '%' } },
-    series: [{
-      type: 'bar', barWidth: 80,
-      data: [
-        { value: m.mAP50, itemStyle: { color: '#409eff' } },
-        { value: m.mAP50_95, itemStyle: { color: '#67c23a' } },
-        { value: m.precision, itemStyle: { color: '#e6a23c' } },
-        { value: m.recall, itemStyle: { color: '#f56c6c' } },
-      ],
-      label: { show: true, formatter: (p: any) => (p.value * 100).toFixed(2) + '%' },
-    }],
+    tooltip: { trigger: "axis" },
+    xAxis: { data: ["mAP50", "mAP50-95", "Precision", "Recall"] },
+    yAxis: { max: 1, axisLabel: { formatter: (v: number) => (v * 100).toFixed(0) + "%" } },
+    series: [
+      {
+        type: "bar",
+        barWidth: 80,
+        data: [
+          { value: m.mAP50, itemStyle: { color: "#409eff" } },
+          { value: m.mAP50_95, itemStyle: { color: "#67c23a" } },
+          { value: m.precision, itemStyle: { color: "#e6a23c" } },
+          { value: m.recall, itemStyle: { color: "#f56c6c" } },
+        ],
+        label: { show: true, formatter: (p: any) => (p.value * 100).toFixed(2) + "%" },
+      },
+    ],
     grid: { top: 60, bottom: 30 },
-  })
-  window.addEventListener('resize', () => chart.resize())
+  });
+  window.addEventListener("resize", () => chart.resize());
 }
 
 async function handleViewResult(task: EvalTask) {
-  currentTask.value = task
-  if (task.metrics) setTimeout(renderChart, 200)
+  currentTask.value = task;
+  if (task.metrics) setTimeout(renderChart, 200);
 }
 </script>
 
@@ -117,8 +140,13 @@ async function handleViewResult(task: EvalTask) {
           </el-select>
         </el-col>
         <el-col :span="4">
-          <el-button type="primary" :loading="evaling" :disabled="datasets.length === 0"
-            @click="handleEval" style="width: 100%">
+          <el-button
+            type="primary"
+            :loading="evaling"
+            :disabled="datasets.length === 0"
+            @click="handleEval"
+            style="width: 100%"
+          >
             Start Evaluation
           </el-button>
         </el-col>
@@ -134,7 +162,7 @@ async function handleViewResult(task: EvalTask) {
             <el-descriptions-item label="mAP50-95">{{ currentTask.metrics.mAP50_95 }}</el-descriptions-item>
             <el-descriptions-item label="Precision">{{ currentTask.metrics.precision }}</el-descriptions-item>
             <el-descriptions-item label="Recall">{{ currentTask.metrics.recall }}</el-descriptions-item>
-            <el-descriptions-item label="FPS">{{ currentTask.metrics.fps || 'N/A' }}</el-descriptions-item>
+            <el-descriptions-item label="FPS">{{ currentTask.metrics.fps || "N/A" }}</el-descriptions-item>
             <el-descriptions-item label="Inference Time">{{ currentTask.metrics.inference_ms }}ms</el-descriptions-item>
             <el-descriptions-item label="Model">{{ currentTask.model_name }}</el-descriptions-item>
             <el-descriptions-item label="Dataset">{{ currentTask.dataset_name }}</el-descriptions-item>
@@ -151,14 +179,15 @@ async function handleViewResult(task: EvalTask) {
             <el-table-column prop="status" label="Status" width="90">
               <template #default="{ row }">
                 <el-tag :type="row.status === 'done' ? 'success' : row.status === 'failed' ? 'danger' : 'warning'">
-                  {{ row.status === 'done' ? 'Done' : row.status === 'failed' ? 'Failed' : 'Running' }}
+                  {{ row.status === "done" ? "Done" : row.status === "failed" ? "Failed" : "Running" }}
                 </el-tag>
               </template>
             </el-table-column>
             <el-table-column label="Actions" width="60">
               <template #default="{ row }">
-                <el-button text type="primary" @click="handleViewResult(row)"
-                  :disabled="row.status !== 'done'">View</el-button>
+                <el-button text type="primary" @click="handleViewResult(row)" :disabled="row.status !== 'done'"
+                  >View</el-button
+                >
               </template>
             </el-table-column>
           </el-table>

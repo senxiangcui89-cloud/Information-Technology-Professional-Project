@@ -1,8 +1,11 @@
 """Visualization utilities for detection results and metric comparisons."""
 
+from __future__ import annotations
+
 from pathlib import Path
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
@@ -58,11 +61,21 @@ def plot_metric_comparison(
     ax.grid(True, alpha=0.3, axis="y")
 
     for bar in bars1:
-        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.01,
-                f"{bar.get_height():.3f}", ha="center", fontsize=9)
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            bar.get_height() + 0.01,
+            f"{bar.get_height():.3f}",
+            ha="center",
+            fontsize=9,
+        )
     for bar in bars2:
-        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.01,
-                f"{bar.get_height():.3f}", ha="center", fontsize=9)
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            bar.get_height() + 0.01,
+            f"{bar.get_height():.3f}",
+            ha="center",
+            fontsize=9,
+        )
 
     fig.tight_layout()
     fig.savefig(str(save_path), dpi=150)
@@ -85,8 +98,7 @@ def plot_fps_comparison(
     ax.set_title("Inference Speed Comparison", fontsize=14)
 
     for bar, v in zip(bars, values):
-        ax.text(bar.get_width() + 0.5, bar.get_y() + bar.get_height() / 2,
-                f"{v:.1f}", va="center", fontsize=10)
+        ax.text(bar.get_width() + 0.5, bar.get_y() + bar.get_height() / 2, f"{v:.1f}", va="center", fontsize=10)
 
     fig.tight_layout()
     fig.savefig(str(save_path), dpi=150)
