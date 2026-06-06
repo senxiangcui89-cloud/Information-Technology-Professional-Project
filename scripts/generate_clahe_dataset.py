@@ -1,7 +1,9 @@
 """Generate CLAHE-preprocessed copy of the dataset."""
-import cv2
+
 import shutil
 from pathlib import Path
+
+import cv2
 from tqdm import tqdm
 
 SRC = Path("data/processed")
