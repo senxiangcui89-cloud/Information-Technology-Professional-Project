@@ -1,22 +1,28 @@
+from __future__ import annotations
+
 import threading
 import uuid
 from pathlib import Path
 
 import cv2
 import numpy as np
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, BackgroundTasks
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
-from app.core.database import get_db
-from app.core.config import UPLOAD_DIR
 from app.api.deps import get_current_user
-from app.models.detection import DetectionTask, DetectionResult
+from app.core.config import UPLOAD_DIR
+from app.core.database import get_db
+from app.models.detection import DetectionResult, DetectionTask
 from app.schemas.detect import (
-    DetectResponse, DetectionBox, ModelInfo,
-    VideoProgress, AnalyzeResponse, ReportResponse,
+    AnalyzeResponse,
+    DetectionBox,
+    DetectResponse,
+    ModelInfo,
+    ReportResponse,
+    VideoProgress,
 )
-from app.services.detector import detect, process_video, video_progress, AVAILABLE_MODELS
 from app.services.clahe import apply_clahe
+from app.services.detector import AVAILABLE_MODELS, detect, process_video, video_progress
 from app.services.qwen import analyze_detection
 from app.services.report import generate_report
 
@@ -86,13 +92,18 @@ def detect_image(
     db.refresh(task)
 
     for d in detections:
-        db.add(DetectionResult(
-            task_id=task.id,
-            class_id=0,
-            class_name=d["class_name"],
-            confidence=d["confidence"],
-            x1=d["x1"], y1=d["y1"], x2=d["x2"], y2=d["y2"],
-        ))
+        db.add(
+            DetectionResult(
+                task_id=task.id,
+                class_id=0,
+                class_name=d["class_name"],
+                confidence=d["confidence"],
+                x1=d["x1"],
+                y1=d["y1"],
+                x2=d["x2"],
+                y2=d["y2"],
+            )
+        )
     db.commit()
 
     return DetectResponse(
@@ -170,6 +181,7 @@ def detect_video(
 def _process_video_task(video_path: str, output_path: str, model_name: str, use_clahe: bool, task_id: int):
     """Background video processing, updates DB on completion."""
     from app.core.database import SessionLocal
+
     process_video(video_path, output_path, model_name, use_clahe, task_id)
 
     db = SessionLocal()
@@ -213,8 +225,7 @@ def analyze(
 
     results = db.query(DetectionResult).filter(DetectionResult.task_id == task_id).all()
     detections = [
-        {"class_name": r.class_name, "confidence": r.confidence,
-         "x1": r.x1, "y1": r.y1, "x2": r.x2, "y2": r.y2}
+        {"class_name": r.class_name, "confidence": r.confidence, "x1": r.x1, "y1": r.y1, "x2": r.x2, "y2": r.y2}
         for r in results
     ]
 
@@ -242,8 +253,7 @@ def export_report(
 
     results = db.query(DetectionResult).filter(DetectionResult.task_id == task_id).all()
     detections = [
-        {"class_name": r.class_name, "confidence": r.confidence,
-         "x1": r.x1, "y1": r.y1, "x2": r.x2, "y2": r.y2}
+        {"class_name": r.class_name, "confidence": r.confidence, "x1": r.x1, "y1": r.y1, "x2": r.x2, "y2": r.y2}
         for r in results
     ]
 
@@ -285,8 +295,12 @@ def get_result(task_id: int, db: Session = Depends(get_db)):
             DetectionBox(
                 class_name=r.class_name,
                 confidence=r.confidence,
-                x1=r.x1, y1=r.y1, x2=r.x2, y2=r.y2,
-            ) for r in results
+                x1=r.x1,
+                y1=r.y1,
+                x2=r.x2,
+                y2=r.y2,
+            )
+            for r in results
         ],
         result_image_url=url_field if task.source_type != "video" else None,
         result_video_url=url_field if task.source_type == "video" else None,
@@ -311,8 +325,12 @@ def list_tasks(user: dict = Depends(get_current_user), db: Session = Depends(get
             "status": t.status,
             "detection_count": t.detection_count,
             "inference_time_ms": t.inference_time_ms,
-            "result_video_url": f"/uploads/videos/{t.result_filename}" if t.source_type == "video" and t.result_filename else None,
-            "result_image_url": f"/uploads/results/{t.result_filename}" if t.source_type == "image" and t.result_filename else None,
+            "result_video_url": f"/uploads/videos/{t.result_filename}"
+            if t.source_type == "video" and t.result_filename
+            else None,
+            "result_image_url": f"/uploads/results/{t.result_filename}"
+            if t.source_type == "image" and t.result_filename
+            else None,
             "created_at": t.created_at.isoformat() if t.created_at else None,
         }
         for t in tasks
