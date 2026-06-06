@@ -6,10 +6,11 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from ultralytics import YOLO
 import cv2
 import numpy as np
+
 from app.core.config import MODELS_DIR
+from ultralytics import YOLO
 
 AVAILABLE_MODELS = {
     "yolo11n_raw": {
@@ -74,14 +75,16 @@ def _parse_results(r, model: YOLO) -> tuple[list[dict], float]:
         confs = r.boxes.conf.cpu().numpy()
         clss = r.boxes.cls.cpu().numpy()
         for i in range(len(boxes)):
-            detections.append({
-                "class_name": model.names[int(clss[i])],
-                "confidence": round(float(confs[i]), 4),
-                "x1": round(float(boxes[i][0]), 2),
-                "y1": round(float(boxes[i][1]), 2),
-                "x2": round(float(boxes[i][2]), 2),
-                "y2": round(float(boxes[i][3]), 2),
-            })
+            detections.append(
+                {
+                    "class_name": model.names[int(clss[i])],
+                    "confidence": round(float(confs[i]), 4),
+                    "x1": round(float(boxes[i][0]), 2),
+                    "y1": round(float(boxes[i][1]), 2),
+                    "x2": round(float(boxes[i][2]), 2),
+                    "y2": round(float(boxes[i][3]), 2),
+                }
+            )
     inference_time = round(r.speed.get("inference", 0), 1)
     return detections, inference_time
 

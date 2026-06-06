@@ -1,10 +1,13 @@
+from __future__ import annotations
+
 import shutil
 import uuid
 from pathlib import Path
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
-from app.core.config import UPLOAD_DIR
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
+
 from app.api.deps import get_current_user
+from app.core.config import UPLOAD_DIR
 from app.services.dataset import extract_and_validate, list_datasets
 
 router = APIRouter(prefix="/api/dataset", tags=["dataset"])
@@ -35,7 +38,7 @@ def upload_dataset(
         return {"name": safe_name, **info}
     except Exception as e:
         zip_path.unlink(missing_ok=True)
-        raise HTTPException(400, f"数据集解析失败: {str(e)}")
+        raise HTTPException(400, f"数据集解析失败: {e!s}")
 
 
 @router.get("/list")
