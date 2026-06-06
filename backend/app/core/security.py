@@ -1,7 +1,11 @@
+from __future__ import annotations
+
 from datetime import datetime, timedelta, timezone
-from jose import jwt, JWTError
+
+from jose import JWTError, jwt
 from passlib.context import CryptContext
-from .config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+
+from .config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, SECRET_KEY
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
