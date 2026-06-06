@@ -142,6 +142,7 @@ Contributing a new dataset involves several steps to ensure that it aligns well 
        from pathlib import Path
 
        from ultralytics.data.utils import compress_one_image
+
        from ultralytics.utils.downloads import zip_directory
 
        # Define dataset directory
@@ -221,6 +222,7 @@ To optimize and zip a dataset using Ultralytics tools, follow this example code:
         from pathlib import Path
 
         from ultralytics.data.utils import compress_one_image
+
         from ultralytics.utils.downloads import zip_directory
 
         # Define dataset directory

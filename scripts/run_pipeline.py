@@ -83,7 +83,8 @@ def step_evaluate() -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Floating Debris Detection Pipeline")
     parser.add_argument(
-        "--step", required=True,
+        "--step",
+        required=True,
         choices=["prep", "train", "eval", "all"],
         help="Pipeline step to run",
     )

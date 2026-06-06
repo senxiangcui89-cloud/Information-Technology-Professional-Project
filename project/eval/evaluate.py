@@ -5,6 +5,8 @@ for trained models, and produces tabular + visual comparisons between
 raw-image and CLAHE-enhanced models.
 """
 
+from __future__ import annotations
+
 import json
 import time
 from pathlib import Path
@@ -16,10 +18,10 @@ from pydantic import BaseModel, Field
 
 from project.utils.metrics_plot import plot_fps_comparison, plot_metric_comparison
 
-
 # ----------------------------------------------------------------
 # Config
 # ----------------------------------------------------------------
+
 
 class EvalConfig(BaseModel):
     data_yaml: str = Field(default="data/dataset.yaml")
@@ -33,6 +35,7 @@ class EvalConfig(BaseModel):
 # ----------------------------------------------------------------
 # Metric evaluation (mAP, Precision, Recall)
 # ----------------------------------------------------------------
+
 
 def evaluate_model(
     weights_path: str | Path,
@@ -84,6 +87,7 @@ def evaluate_model(
 # ----------------------------------------------------------------
 # Inference speed benchmark (FPS)
 # ----------------------------------------------------------------
+
 
 def benchmark_fps(
     weights_path: str | Path,
@@ -140,6 +144,7 @@ def benchmark_fps(
 # Head-to-head comparison: Raw vs CLAHE
 # ----------------------------------------------------------------
 
+
 def compare_raw_vs_clahe(
     raw_weights: str | Path,
     clahe_weights: str | Path,
@@ -194,7 +199,8 @@ def compare_raw_vs_clahe(
     if config.save_plots:
         print("[EVAL] Generating comparison plots...")
         plot_metric_comparison(
-            raw_metrics, clahe_metrics,
+            raw_metrics,
+            clahe_metrics,
             save_path=output_dir / "metrics_comparison.png",
         )
         plot_fps_comparison(
@@ -222,6 +228,7 @@ def compare_raw_vs_clahe(
 # Batch comparison across all experiments
 # ----------------------------------------------------------------
 
+
 def batch_compare(
     experiments_dir: str | Path = "experiments",
     data_yaml: str = "data/dataset.yaml",
@@ -248,7 +255,9 @@ def batch_compare(
         print(f"{'=' * 50}")
 
         comparison = compare_raw_vs_clahe(
-            raw_pt, clahe_pt, data_yaml,
+            raw_pt,
+            clahe_pt,
+            data_yaml,
             output_dir=experiments_dir / f"comparison_{raw_dir.name.replace('_raw', '')}",
         )
         comparisons.append(comparison)
