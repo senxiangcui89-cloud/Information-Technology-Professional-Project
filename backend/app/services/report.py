@@ -1,7 +1,11 @@
+from __future__ import annotations
+
+from datetime import datetime
+from pathlib import Path
+
 from docx import Document
 from docx.shared import Inches
-from pathlib import Path
-from datetime import datetime
+
 from app.core.config import UPLOAD_DIR
 
 
